@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - Cyberbullying Detector</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #e63946;
+            --gray: #6c757d;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 5%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-left {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-left::before {
+            content: "🛡️";
+            font-size: 1.5rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-right a, .nav-right span {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-right a:hover {
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-right a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-right a:hover::after {
+            width: 100%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .flash-wrapper {
+            margin-bottom: 2rem;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .flash {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(67, 97, 238, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(67, 97, 238, 0);
+            }
+        }
+
+        .flash.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .flash.error {
+            background: var(--danger);
+            color: white;
+        }
+
+        .flash.warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .flash.info {
+            background: var(--primary);
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            animation: cardAppear 0.6s ease;
+        }
+
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .history-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 150px;
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+            animation: slideInRight 0.5s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .stat-safe .stat-value {
+            color: var(--success);
+        }
+
+        .stat-warning .stat-value {
+            color: var(--warning);
+        }
+
+        .stat-danger .stat-value {
+            color: var(--danger);
+        }
+
+        .history-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .history-items {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .history-item {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            animation: slideInUp 0.5s ease;
+            border-left: 4px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .history-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-item.danger {
+            border-left-color: var(--danger);
+        }
+
+        .history-item.warning {
+            border-left-color: var(--warning);
+        }
+
+        .history-item.safe {
+            border-left-color: var(--success);
+        }
+
+        .history-content {
+            margin-bottom: 1rem;
+        }
+
+        .history-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .history-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .history-prediction {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .prediction-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .badge-safe {
+            background: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(248, 150, 30, 0.2);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(230, 57, 70, 0.2);
+            color: var(--danger);
+        }
+
+        .history-confidence {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .confidence-bar {
+            width: 80px;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease;
+        }
+
+        .confidence-fill.safe {
+            background: var(--success);
+        }
+
+        .confidence-fill.warning {
+            background: var(--warning);
+        }
+
+        .confidence-fill.danger {
+            background: var(--danger);
+        }
+
+        .history-time {
+            color: var(--gray);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+            animation: fadeIn 0.8s ease;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(67, 97, 238, 0.2);
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            color: var(--gray);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-right {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .history-stats {
+                flex-direction: column;
+            }
+
+            .history-details {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .history-filters {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">Cyberbullying Detection</div>
+        <div class="nav-right">
+            {% if user %}
+                <span>Hi, {{ user.username }}</span>
+                <a href="/"><i class="fas fa-home"></i> Home</a>
+                <a href="/detector"><i class="fas fa-search"></i> Detect</a>
+                <a href="/history"><i class="fas fa-history"></i> History</a>
+                <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="{{ url_for('register') }}"><i class="fas fa-user-plus"></i> Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-wrapper">
+              {% for category, message in messages %}
+                <div class="flash {{ category }}">
+                    {% if category == 'success' %}
+                        <i class="fas fa-check-circle"></i>
+                    {% elif category == 'error' %}
+                        <i class="fas fa-exclamation-circle"></i>
+                    {% elif category == 'warning' %}
+                        <i class="fas fa-exclamation-triangle"></i>
+                    {% else %}
+                        <i class="fas fa-info-circle"></i>
+                    {% endif %}
+                    {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-history"></i> Your Past Predictions</h2>
+                <div class="history-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="bullying_low">Bullying with low aggression</button>
+                    <button class="filter-btn" data-filter="bullying_high">Bullying with high aggression</button>
+                    <button class="filter-btn" data-filter="other_cyberbullying">Other Cyberbullying</button>
+                    <button class="filter-btn" data-filter="not_cyberbullying">Not Cyberbullying</button>
+                </div>
+            </div>
+
+            <div class="card-body">
+            <h3 class="section-title">Roles & Classification Logic</h3>
+
+            <ul class="roles-list">
+                <li>
+                    <strong>Aggressor:</strong>
+                    Messages identified as bullying with high aggression
+                    are classified as <em>High-Severity Bullying</em>.
+                </li>
+
+                <li>
+                    <strong>Supporter:</strong>
+                    Messages containing bullying behavior with low aggression
+                    are classified as <em>Low-Level Bullying</em>.
+                </li>
+
+                <li>
+                    <strong>Neutral:</strong>
+                    Messages without bullying indicators are classified
+                    as <em>Normal</em>.
+                </li>
+
+                <li>
+                    <strong>Defender:</strong>
+                    Messages that support or protect the victim are identified(like Stop Bullying,Don't Bullying on him/her)
+                    as <em>Defending Messages</em>.
+                </li>
+            </ul>
+
+            </div>
+
+
+            {% if rows %}
+            <div class="history-stats">
+                <div class="stat-card stat-safe">
+                    <div class="stat-value" id="safeCount">0</div>
+                    <div class="stat-label">Safe Predictions</div>
+                </div>
+                <div class="stat-card stat-warning">
+                    <div class="stat-value" id="warningCount">0</div>
+                    <div class="stat-label">Warnings</div>
+                </div>
+                <div class="stat-card stat-danger">
+                    <div class="stat-value" id="dangerCount">0</div>
+                    <div class="stat-label">Cyberbullying Detected</div>
+                </div>
+            </div>
+
+            <div class="history-items" id="historyContainer">
+                {% for r in rows %}
+                <div class="history-item 
+                    {% if r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}
+                        danger
+                    {% elif r['prediction_label'] == 'Bullying with low aggression' %}
+                        warning
+                    {% else %}
+                        safe
+                    {% endif %}" 
+                    data-type="{% if r['prediction_label'] == 'Bullying with high aggression' %}bullying_high{% elif r['prediction_label'] == 'Bullying with low aggression' %}bullying_low{% elif r['prediction_label'] == 'other_cyberbullying' %}other_cyberbullying{% else %}not_cyberbullying{% endif %}">
+                    
+                    <div class="history-content">
+                        <div class="history-text">{{ r['input_text'] }}</div>
+                        <div class="history-details">
+                            <div class="history-prediction">
+                                <span class="prediction-badge 
+                                    {% if r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}
+                                        badge-danger
+                                    {% elif r['prediction_label'] == 'Bullying with low aggression' %}
+                                        badge-warning
+                                    {% else %}
+                                        badge-safe
+                                    {% endif %}">
+                                    <i class="fas fa-{% if r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}exclamation-triangle{% elif r['prediction_label'] == 'Bullying with low aggression' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
+                                    {{ r['prediction_label'] }}
+                                </span>
+                            </div>
+                            
+                            {% if r['confidence'] is not none %}
+                            <div class="history-confidence">
+                                <span>{{ "%.2f"|format(r['confidence']) }}%</span>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill 
+                                        {% if r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}
+                                            danger
+                                        {% elif r['prediction_label'] == 'Bullying with low aggression' %}
+                                            warning
+                                        {% else %}
+                                            safe
+                                        {% endif %}" 
+                                        style="width: {{ r['confidence'] }}%;">
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="history-time">
+                                <i class="far fa-clock"></i>
+                                {{ r['created_at'] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h3>No predictions yet</h3>
+                <p>You haven't made any predictions yet. Start detecting cyberbullying to see your history here.</p>
+                <a href="{{ url_for('home') }}" class="btn">
+                    <i class="fas fa-search"></i> Make Your First Prediction
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2023 Cyberbullying Detector. All rights reserved.</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Count predictions by type
+            function updateStats() {
+                const safeCount = document.querySelectorAll('.history-item.safe').length;
+                const warningCount = document.querySelectorAll('.history-item.warning').length;
+                const dangerCount = document.querySelectorAll('.history-item.danger').length;
+                
+                document.getElementById('safeCount').textContent = safeCount;
+                document.getElementById('warningCount').textContent = warningCount;
+                document.getElementById('dangerCount').textContent = dangerCount;
+                
+                // Animate the numbers
+                animateValue('safeCount', 0, safeCount, 1000);
+                animateValue('warningCount', 0, warningCount, 1000);
+                animateValue('dangerCount', 0, dangerCount, 1000);
+            }
+            
+            function animateValue(id, start, end, duration) {
+                const obj = document.getElementById(id);
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    obj.innerHTML = Math.floor(progress * (end - start) + start);
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+            
+            // Filter functionality
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const historyItems = document.querySelectorAll('.history-item');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter items
+                    historyItems.forEach(item => {
+                        const itemType = item.getAttribute('data-type');
+                        
+                        if (filter === 'all' || itemType === filter) {
+                            item.style.display = 'block';
+                            setTimeout(() => {
+                                item.style.opacity = '1';
+                                item.style.transform = 'translateY(0)';
+                            }, 10);
+                        } else {
+                            item.style.opacity = '0';
+                            item.style.transform = 'translateY(20px)';
+                            setTimeout(() => {
+                                item.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            });
+            
+            // Initialize stats
+            if (document.querySelector('.history-item')) {
+                updateStats();
+            }
+            
+            // Add hover animations
+            const items = document.querySelectorAll('.history-item');
+            items.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+            
+            // Animate items on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'slideInUp 0.5s ease forwards';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            items.forEach(item => {
+                observer.observe(item);
+            });
+        });
+    </script>
+</body>
+</html>
