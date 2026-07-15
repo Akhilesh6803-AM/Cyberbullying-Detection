@@ -27,7 +27,7 @@ except Exception:
 HIGH_AGGR_TERMS = {
     "fuck", "fucking", "bitch", "bastard", "whore","slut",
     "retard", "dumbass", "moron", "kys", "kill yourself",
-    "die", "ugly", "stupid"
+    "die", "ugly", "stupid", "kill", "murder", "threat"
 }
 
 
@@ -54,29 +54,35 @@ def basic_clean(text: str) -> str:
 
 def has_high_aggression(text: str) -> bool:
     t = str(text).lower()
-    return any(term in t for term in HIGH_AGGR_TERMS)
+    # To prevent "kill" from matching "skill", pad with spaces or use regex word boundaries
+    # A simple trick: pad the text with spaces
+    padded_t = f" {t} "
+    
+    for term in HIGH_AGGR_TERMS:
+        # pad term with spaces to ensure full word match, or just use regex boundary
+        if re.search(r'\b' + re.escape(term) + r'\b', t):
+            return True
+    return False
 
 
 def map_to_4class(row) -> str:
     t = row["tweet_text"]
     ctype = row["cyberbullying_type"]
 
+    # Explicit override for highly aggressive terms regardless of dataset category
+    if has_high_aggression(t):
+        return "Bullying with high aggression"
+
     if ctype == "not_cyberbullying":
         return "Normal"
 
     # Generic cyberbullying
     if ctype == "other_cyberbullying":
-        if has_high_aggression(t):
-            return "Bullying with high aggression"
-        else:
-            return "Aggression"
+        return "Aggression"
 
     # Targeted cyberbullying: age / gender / religion / ethnicity
     if ctype in ["age", "gender", "religion", "ethnicity"]:
-        if has_high_aggression(t):
-            return "Bullying with high aggression"
-        else:
-            return "Bullying with low aggression"
+        return "Bullying with low aggression"
 
     # Fallback (shouldn't happen)
     return "Normal"
@@ -125,7 +131,6 @@ def main():
 
     clf = LogisticRegression(
         max_iter=400,
-        multi_class="multinomial",
         n_jobs=-1,
     )
     clf.fit(X_train_vec, y_train)
@@ -143,7 +148,7 @@ def main():
     joblib.dump(tfidf, "saved_models/tfidf_4class.pkl")
     joblib.dump(clf, "saved_models/model_4class.pkl")
     joblib.dump(LABELS, "saved_models/classes_4class.pkl")
-    print("✅ Saved: saved_models/tfidf_4class.pkl, model_4class.pkl, classes_4class.pkl")
+    print("Saved: saved_models/tfidf_4class.pkl, model_4class.pkl, classes_4class.pkl")
 
 
 if __name__ == "__main__":
