@@ -476,19 +476,26 @@
             
             <div class="form-group">
                 <label>Prediction:</label>
-                {% if prediction.lower() in ['cyberbullying', 'bullying', 'toxic', 'harassment', 'hate'] %}
-                    <div class="result-badge badge-danger">
-                        <i class="fas fa-exclamation-triangle"></i> {{ prediction }}
-                    </div>
-                    <p class="warning-text" style="margin-top: 10px; color: var(--danger);">
-                        <i class="fas fa-info-circle"></i> 
-                    </p>
-                {% else %}
+                {% if prediction.lower() == 'normal' %}
                     <div class="result-badge badge-safe">
                         <i class="fas fa-check-circle"></i> {{ prediction }}
                     </div>
                     <p class="safe-text" style="margin-top: 10px; color: var(--success);">
-                        <i class="fas fa-thumbs-up"></i>
+                        <i class="fas fa-thumbs-up"></i> No cyberbullying or aggression detected.
+                    </p>
+                {% elif prediction.lower() == 'bullying with high aggression' %}
+                    <div class="result-badge badge-danger">
+                        <i class="fas fa-exclamation-triangle"></i> {{ prediction }}
+                    </div>
+                    <p class="warning-text" style="margin-top: 10px; color: var(--danger);">
+                        <i class="fas fa-exclamation-circle"></i> Highly aggressive cyberbullying detected. Take action to block or report.
+                    </p>
+                {% else %}
+                    <div class="result-badge badge-warning">
+                        <i class="fas fa-exclamation-circle"></i> {{ prediction }}
+                    </div>
+                    <p class="warning-text" style="margin-top: 10px; color: var(--warning);">
+                        <i class="fas fa-info-circle"></i> Potentially harmful content or aggression detected.
                     </p>
                 {% endif %}
             </div>
@@ -501,10 +508,12 @@
                 </div>
                 <div class="meter-bar">
                     <div class="meter-fill 
-                        {% if prediction.lower() in ['cyberbullying', 'bullying', 'toxic', 'harassment', 'hate'] %}
+                        {% if prediction.lower() == 'normal' %}
+                            safe
+                        {% elif prediction.lower() == 'bullying with high aggression' %}
                             danger
                         {% else %}
-                            safe
+                            warning
                         {% endif %}" 
                         style="width: {{ confidence }}%;">
                     </div>
