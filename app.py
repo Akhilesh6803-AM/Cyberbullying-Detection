@@ -4,7 +4,6 @@ import sqlite3
 import emoji
 import contractions
 import numpy as np
-import torch
 from four_class_model import categorize_text
 from datetime import datetime
 from flask import (
@@ -18,7 +17,26 @@ from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
 
 import joblib
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+# Lazy imports for PyTorch and Transformers to allow deployment without them
+torch = None
+AutoTokenizer = None
+AutoModelForSequenceClassification = None
+
+def _lazy_import_bert_deps():
+    global torch, AutoTokenizer, AutoModelForSequenceClassification
+    if torch is None:
+        try:
+            import torch as _torch
+            from transformers import AutoTokenizer as _AutoTokenizer, AutoModelForSequenceClassification as _AutoModelForSequenceClassification
+            torch = _torch
+            AutoTokenizer = _AutoTokenizer
+            AutoModelForSequenceClassification = _AutoModelForSequenceClassification
+        except ImportError:
+            raise ImportError(
+                "PyTorch ('torch') and Hugging Face Transformers ('transformers') are required to run the BERT model. "
+                "Please install them or change your model configuration to SVM or NaiveBayes."
+            )
 
 # =========================
 # Basic Flask setup
@@ -127,6 +145,7 @@ class CyberbullyingModel:
 
     # ---------- BERT ----------
     def _load_bert(self):
+        _lazy_import_bert_deps()
         save_dir = os.path.join(SAVED_MODELS_DIR, "bert_cyberbullying")
         self.tokenizer = AutoTokenizer.from_pretrained(save_dir)
         self.model = AutoModelForSequenceClassification.from_pretrained(save_dir)
@@ -158,6 +177,7 @@ class CyberbullyingModel:
 
         # If BERT model
         elif self.mode == "BERT":
+            _lazy_import_bert_deps()
             encoding = self.tokenizer(
                 clean,
                 add_special_tokens=True,
@@ -185,7 +205,7 @@ class CyberbullyingModel:
 
 
 # create global model instance
-model_wrapper = CyberbullyingModel()
+# model_wrapper = CyberbullyingModel()  # Commented out to save memory (unused; routes use categorize_text instead)
 
 # =========================
 # SQLite helpers
@@ -230,6 +250,11 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+
+# Initialize database and directories on import (needed for WSGI servers like Gunicorn)
+os.makedirs(SAVED_MODELS_DIR, exist_ok=True)
+init_db()
 
 
 # =========================
@@ -415,6 +440,6 @@ def logout():
 # Main
 # =========================
 if __name__ == "__main__":
-    os.makedirs(SAVED_MODELS_DIR, exist_ok=True)
-    init_db()
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    debug_mode = os.environ.get("FLASK_DEBUG", "false").lower() in {"1", "true", "yes"}
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)

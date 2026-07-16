@@ -1,0 +1,9 @@
+Flask>=2.3
+numpy
+joblib
+nltk
+emoji
+contractions
+scikit-learn
+pandas
+gunicorn
