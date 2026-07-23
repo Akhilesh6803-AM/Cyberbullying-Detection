@@ -25,9 +25,20 @@ except Exception:
 
 # ---- Severity lexicon (you can adjust) ----
 HIGH_AGGR_TERMS = {
-    "fuck", "fucking", "bitch", "bastard", "whore","slut",
+    # Existing
+    "fuck", "fucking", "bitch", "bastard", "whore", "slut",
     "retard", "dumbass", "moron", "kys", "kill yourself",
-    "die", "ugly", "stupid", "kill", "murder", "threat"
+    "die", "ugly", "stupid", "kill", "murder", "threat",
+    
+    # User mentioned & social media abusive terms
+    "rape", "harass", "raged", "rage", "harassment",
+    "cunt", "dick", "pussy", "faggot", "fag", "nigger", "nigga",
+    "chink", "spic", "tranny", "trash", "scum", "loser",
+    "idiot", "pathetic", "worthless", "kill urself", "hang yourself",
+    "drink bleach", "die in a hole", "cancer", "kill u",
+    "molest", "pedophile", "pedo", "groomer", "incel",
+    "stfu", "shut the fuck up", "gtfo", "asshole", "motherfucker",
+    "piece of shit", "pos"
 }
 
 

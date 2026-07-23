@@ -1,5 +1,6 @@
 import re
 import joblib
+import numpy as np
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -32,6 +33,31 @@ def basic_clean(text: str) -> str:
     return text
 
 
+HIGH_AGGR_TERMS = {
+    # Existing
+    "fuck", "fucking", "bitch", "bastard", "whore", "slut",
+    "retard", "dumbass", "moron", "kys", "kill yourself",
+    "die", "ugly", "stupid", "kill", "murder", "threat",
+    
+    # User mentioned & social media abusive terms
+    "rape", "harass", "raged", "rage", "harassment",
+    "cunt", "dick", "pussy", "faggot", "fag", "nigger", "nigga",
+    "chink", "spic", "tranny", "trash", "scum", "loser",
+    "idiot", "pathetic", "worthless", "kill urself", "hang yourself",
+    "drink bleach", "die in a hole", "cancer", "kill u",
+    "molest", "pedophile", "pedo", "groomer", "incel",
+    "stfu", "shut the fuck up", "gtfo", "asshole", "motherfucker",
+    "piece of shit", "pos"
+}
+
+def has_high_aggression(text: str) -> bool:
+    t = str(text).lower()
+    for term in HIGH_AGGR_TERMS:
+        if re.search(r'\b' + re.escape(term) + r'\b', t):
+            return True
+    return False
+
+
 # load trained artifacts
 tfidf: TfidfVectorizer = joblib.load("saved_models/tfidf_4class.pkl")
 model = joblib.load("saved_models/model_4class.pkl")
@@ -48,6 +74,9 @@ def categorize_text(text: str):
             - 'Bullying with high aggression'   //<.90
         confidence: float in [0, 1]
     """
+    if has_high_aggression(text):
+        return "Bullying with high aggression", 0.99
+
     clean = basic_clean(text)
     X = tfidf.transform([clean])
 
