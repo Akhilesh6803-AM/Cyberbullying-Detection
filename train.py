@@ -31,8 +31,9 @@ HIGH_AGGR_TERMS = {
     "die", "ugly", "stupid", "kill", "murder", "threat",
     
     # User mentioned & social media abusive terms
-    "rape", "harass", "raged", "rage", "harassment",
-    "harss", "harras", "harrass", # Common typos
+    "rape", "raped", "raping", "harass", "harassed", "harassing",
+    "raged", "rage", "harassment",
+    "harss", "harras", "harrass", "harrassed", "harrsed", # Common typos
     "cunt", "dick", "pussy", "faggot", "fag", "nigger", "nigga",
     "chink", "spic", "tranny", "trash", "scum", "loser",
     "idiot", "pathetic", "worthless", "kill urself", "hang yourself",
