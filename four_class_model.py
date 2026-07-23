@@ -103,9 +103,13 @@ def categorize_text(text: str):
     # Handle very short text like 'o', 'p', single words that have no meaning
     # Or if the cleaned text is entirely empty
     if len(clean.replace(" ", "")) <= 1:
-        return "Normal", 0.99
+        return "Invalid Input (Too Short)", 0.0
         
     X = tfidf.transform([clean])
+    
+    # If the text has no known vocabulary words (e.g. random numbers, gibberish like 'jkhdhs')
+    if X.nnz == 0:
+        return "Invalid Input (Gibberish or Numbers)", 0.0
 
     if hasattr(model, "predict_proba"):
         probs = model.predict_proba(X)[0]
@@ -117,8 +121,8 @@ def categorize_text(text: str):
 
     idx = probs.argmax()
     
-    # If the text was mostly empty and the model isn't highly confident, default to normal
+    # If the text was mostly empty and the model isn't highly confident
     if np.max(probs) < 0.50 and len(clean.split()) <= 2:
-        return "Normal", 0.99
+        return "Invalid Input (No Meaningful Words)", 0.0
         
     return label_names[idx], float(probs[idx])

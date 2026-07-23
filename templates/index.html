@@ -476,7 +476,14 @@
             
             <div class="form-group">
                 <label>Prediction:</label>
-                {% if prediction.lower() == 'normal' %}
+                {% if 'invalid input' in prediction.lower() %}
+                    <div class="result-badge" style="background: var(--gray); color: white; padding: 8px 16px; border-radius: 50px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <i class="fas fa-ban"></i> {{ prediction }}
+                    </div>
+                    <p class="safe-text" style="margin-top: 10px; color: var(--gray);">
+                        <i class="fas fa-info-circle"></i> Please enter a valid sentence with meaningful words to analyze.
+                    </p>
+                {% elif prediction.lower() == 'normal' %}
                     <div class="result-badge badge-safe">
                         <i class="fas fa-check-circle"></i> {{ prediction }}
                     </div>
@@ -508,7 +515,9 @@
                 </div>
                 <div class="meter-bar">
                     <div class="meter-fill 
-                        {% if prediction.lower() == 'normal' %}
+                        {% if 'invalid input' in prediction.lower() %}
+                            style="background: var(--gray);"
+                        {% elif prediction.lower() == 'normal' %}
                             safe
                         {% elif prediction.lower() == 'bullying with high aggression' %}
                             danger

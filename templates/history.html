@@ -636,7 +636,9 @@
             <div class="history-items" id="historyContainer">
                 {% for r in rows %}
                 <div class="history-item 
-                    {% if r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}
+                    {% if 'invalid input' in r['prediction_label'].lower() %}
+                        invalid
+                    {% elif r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}
                         danger
                     {% elif r['prediction_label'] == 'Bullying with low aggression' %}
                         warning
@@ -650,14 +652,17 @@
                         <div class="history-details">
                             <div class="history-prediction">
                                 <span class="prediction-badge 
-                                    {% if r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}
+                                    {% if 'invalid input' in r['prediction_label'].lower() %}
+                                        badge-invalid
+                                    {% elif r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}
                                         badge-danger
                                     {% elif r['prediction_label'] == 'Bullying with low aggression' %}
                                         badge-warning
                                     {% else %}
                                         badge-safe
-                                    {% endif %}">
-                                    <i class="fas fa-{% if r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}exclamation-triangle{% elif r['prediction_label'] == 'Bullying with low aggression' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
+                                    {% endif %}"
+                                    {% if 'invalid input' in r['prediction_label'].lower() %}style="background: var(--gray); color: white;"{% endif %}>
+                                    <i class="fas fa-{% if 'invalid input' in r['prediction_label'].lower() %}ban{% elif r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}exclamation-triangle{% elif r['prediction_label'] == 'Bullying with low aggression' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
                                     {{ r['prediction_label'] }}
                                 </span>
                             </div>
@@ -667,14 +672,16 @@
                                 <span>{{ "%.2f"|format(r['confidence']) }}%</span>
                                 <div class="confidence-bar">
                                     <div class="confidence-fill 
-                                        {% if r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}
+                                        {% if 'invalid input' in r['prediction_label'].lower() %}
+                                            invalid
+                                        {% elif r['prediction_label'] == 'Bullying with high aggression' or r['prediction_label'] == 'other_cyberbullying' %}
                                             danger
                                         {% elif r['prediction_label'] == 'Bullying with low aggression' %}
                                             warning
                                         {% else %}
                                             safe
-                                        {% endif %}" 
-                                        style="width: {{ r['confidence'] }}%;">
+                                        {% endif %}"
+                                        {% if 'invalid input' in r['prediction_label'].lower() %}style="width: {{ r['confidence'] }}%; background: var(--gray);"{% else %}style="width: {{ r['confidence'] }}%;"{% endif %}>
                                     </div>
                                 </div>
                             </div>
