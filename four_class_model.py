@@ -49,7 +49,26 @@ HIGH_AGGR_TERMS = {
     "drink bleach", "die in a hole", "cancer", "kill u",
     "molest", "pedophile", "pedo", "groomer", "incel",
     "stfu", "shut the fuck up", "gtfo", "asshole", "motherfucker",
-    "piece of shit", "pos"
+    "piece of shit", "pos",
+
+    # Body shaming
+    "fat", "fatass", "whale", "obese", "pig", "hideous", "skeleton", "anorexic", 
+    "fugly", "chubby", "landwhale", "lardass", "bony", "ugly ass",
+
+    # Racial / Ethnic / Religious Slurs
+    "kike", "towelhead", "raghead", "paki", "ching chong", "sandnigger", "gook", 
+    "wetback", "beaner", "cracka", "cracker", "jihadist", "terrorist", "infidel", 
+    "kafir", "kuffar", "muzzie", "zionist scum", "nazi",
+
+    # Homophobic / Transphobic
+    "dyke", "shemale", "homo", "queer", "fag",
+    
+    # Ableist
+    "cripple", "spastic", "mongoloid", "tard", "autistic", "schizo",
+    
+    # Other highly aggressive threats
+    "burn in hell", "hope you die", "rot in hell", "kill him", "kill her", "die scum",
+    "son of a bitch", "sob", "bastards", "whores", "sluts"
 }
 
 def has_high_aggression(text: str) -> bool:
@@ -80,6 +99,12 @@ def categorize_text(text: str):
         return "Bullying with high aggression", 0.99
 
     clean = basic_clean(text)
+    
+    # Handle very short text like 'o', 'p', single words that have no meaning
+    # Or if the cleaned text is entirely empty
+    if len(clean.replace(" ", "")) <= 1:
+        return "Normal", 0.99
+        
     X = tfidf.transform([clean])
 
     if hasattr(model, "predict_proba"):
@@ -91,4 +116,9 @@ def categorize_text(text: str):
         probs = exps / exps.sum()
 
     idx = probs.argmax()
+    
+    # If the text was mostly empty and the model isn't highly confident, default to normal
+    if np.max(probs) < 0.50 and len(clean.split()) <= 2:
+        return "Normal", 0.99
+        
     return label_names[idx], float(probs[idx])
