@@ -32,6 +32,7 @@ HIGH_AGGR_TERMS = {
     
     # User mentioned & social media abusive terms
     "rape", "harass", "raged", "rage", "harassment",
+    "harss", "harras", "harrass", # Common typos
     "cunt", "dick", "pussy", "faggot", "fag", "nigger", "nigga",
     "chink", "spic", "tranny", "trash", "scum", "loser",
     "idiot", "pathetic", "worthless", "kill urself", "hang yourself",
